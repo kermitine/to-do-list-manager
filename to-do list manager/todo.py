@@ -4,7 +4,7 @@ from PyQt6.QtGui import QFont
 from PyQt6 import QtCore
 
 
-version = str(2.3)
+version = str(3)
 
 class lobbyMenu(QWidget):
     def __init__(self):
