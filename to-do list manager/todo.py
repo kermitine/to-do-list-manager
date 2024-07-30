@@ -4,12 +4,7 @@ from PyQt6.QtGui import QFont
 from PyQt6 import QtCore
 
 
-version = str(2)
-
-
-
-(''
- '')
+version = str(2.3)
 
 class lobbyMenu(QWidget):
     def __init__(self):
@@ -34,7 +29,7 @@ class lobbyMenu(QWidget):
         self.addTaskButton.setFont(font)
 
         # remove task
-        self.removeTaskButton = QPushButton('Clear Tasks', self)
+        self.removeTaskButton = QPushButton('Reset Tasks', self)
         self.removeTaskButton.setFont(font)
 
         self.layout.addWidget(self.label1)
@@ -44,22 +39,20 @@ class lobbyMenu(QWidget):
         self.setLayout(self.layout)
 
         self.addTaskButton.clicked.connect(self.on_add_click)
+        self.removeTaskButton.clicked.connect(self.on_remove_click)
 
 
     def on_add_click(self): # opens window and parses table data from savedTasks.txt
 
-
-
         with open('savedTasks.txt', 'r') as rawInput:
             data_list = rawInput.readlines()
         filtered_list = [item.strip() for item in data_list]
-        print(filtered_list)
 
 
-        def data_parser():
+        def data_parser(): # function parses savedTasks.txt and fills in cells
             x = 0  # column
             y = 0  # row
-            z = 0  # current line in data_list
+            z = 0  # current line in filtered list
 
 
             while z != 12:
@@ -68,24 +61,36 @@ class lobbyMenu(QWidget):
                 if y >= 6:
                     x += 1
                     y = 0
-
                 active_cell = addTask.tableWidget.item(y, x)
+
+                if filtered_list[z] is None or filtered_list[z] == '':
+                    print('Empty String')
+                    data = 'Empty'
+                else:
+                    data = filtered_list[z]
                 if active_cell is None:
                     # Create a new cell if it doesn't exist
-                    new_item = QTableWidgetItem(str(filtered_list[z]))
+                    new_item = QTableWidgetItem(data)
                     addTask.tableWidget.setItem(y, x, new_item)
                 else:
-                    active_cell.setText(str(filtered_list[z]))
+                    active_cell.setText(data)
                 z += 1
                 y += 1
             return None
 
-
-
-
         data_parser()
         addTask.show()
 
+    def on_remove_click(self):
+        self.resetComplete = QMessageBox()
+        self.resetComplete.setWindowTitle('Tasks Reset')
+        self.resetComplete.resize(150, 150)
+        self.resetComplete.setText('Tasks Reset!')
+        self.resetComplete.show()
+        with open('savedTasks.txt', 'w') as input:
+            for x in range(12):
+                input.write('Empty' + '\n')
+        print('Tasks Reset!')
 
 class addTask(QWidget):
     def __init__(self):
@@ -107,8 +112,6 @@ class addTask(QWidget):
         self.setLayout(self.layout)
 
         self.saveButton.clicked.connect(self.saveTasks)
-
-
 
 
     def saveTasks(self): # function reads all cells and writes to SavedTasks.txt
@@ -138,23 +141,6 @@ class addTask(QWidget):
         self.saveComplete.setText('List Saved')
         self.saveComplete.show()
         addTask.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
